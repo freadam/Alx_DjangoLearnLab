@@ -17,10 +17,13 @@ def get_books_by_Library(library_name):
     except Library.DoesNotExist:
         return f"No library found with name {library_name}"
 
-def get_Librarian_by_Library(library_name):
+def get_librarian_for_library(library_name):
     try:
-        library = Library.objects.get(name=library_name)
-        librarian = library.librarian
+        library = Librarian.objects.get(library=library_name)
+        librarian = Librarian.objects.get(library=library)
         return librarian
     except Library.DoesNotExist:
-        return f"No library found with name {libraryName}"
+        return f"No library found with name {library_name}"
+    except Librarian.DoesNotExist:
+        return f"No librarian found for the library {library_name}"
+    
