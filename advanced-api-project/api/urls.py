@@ -1,11 +1,13 @@
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
-from . import views
+from .views import BookListView, BookDetailView, BookCreateView, BookUpdateView, BookDeleteView
 
-# URLConf
+
+
 urlpatterns = [
-    path('books/', views.book_list),
-    path('books/<int:id>/', views.book_detail),
-    path('authors/', views.Author_list),
-    path('authors/<int:id>/', views.Author_detail),
-]
+       path('books/', BookListView.as_view(), name='book-list'),
+       path('books/<int:pk>/', BookDetailView.as_view(), name='book-detail'),
+       path('books/create/', BookCreateView.as_view(), name='book-create'),
+       path('books/update/', BookUpdateView.as_view(), name='book-update'),
+       path('books/delete/', BookDeleteView.as_view(), name='book-delete'),
+   ]
