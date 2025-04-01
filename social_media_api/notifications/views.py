@@ -1,21 +1,28 @@
-from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from .models import Notification
-from .serializers import NotificationSerializer
-from rest_framework.views import APIView
+from rest_framework import generics, status
 
-
-
-class NotificationList(generics.ListCreateAPIView):
-    queryset = Notification.objects.all()
-    serializer_class = NotificationSerializer
-    permission_classes = [IsAuthenticated]
-
-
-class NotificationListView(APIView):
-    permission_classes = [IsAuthenticated]
+# View to get the notifications for the authenticated user
+class NotificationListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]  # Only authenticated users can see their notifications
 
     def get(self, request):
-        notifications = Notification.objects.filter(user=request.user)
-        serializer = NotificationSerializer(notifications, many=True)
-        return Response(serializer.data)
+        # Get all notifications for the current user
+        notifications = Notification.objects.filter(recipient=request.user)
+
+        # Mark all notifications as read
+        notifications.update(read=True)
+
+        # Return a list of notifications
+        notifications_data = [
+            {
+                'actor': notification.actor.username,
+                'verb': notification.verb,
+                'target': str(notification.target),
+                'timestamp': notification.timestamp,
+                'read': notification.read
+            }
+            for notification in notifications
+        ]
+        return Response(notifications_data, status=status.HTTP_200_OK)
